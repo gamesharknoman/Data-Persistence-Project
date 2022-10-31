@@ -4,14 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class MenuUiHandler : MonoBehaviour
 {
     public InputField inputField;
-    public static string playerName;
     public TMP_Text highScoreText;
     void OnEnable()
     {
@@ -26,7 +22,8 @@ public class MenuUiHandler : MonoBehaviour
     public void Start()
     {
         MainManager.Instance.LoadPlayerData();
-        highScoreText.text = GameManager.highScoreName + " " + GameManager.highScore;
+        highScoreText.text = MainManager.Instance.highScoreName + ": " + MainManager.Instance.highScore;
+        inputField.GetComponent<InputField>().text = MainManager.Instance.playerName;
     }
     public void Update()
     {
@@ -37,22 +34,13 @@ public class MenuUiHandler : MonoBehaviour
     }
     public void StartNew()
     {
-        playerName = inputField.GetComponent<InputField>().text;
-        if(playerName == "")
+        MainManager.Instance.playerName = inputField.GetComponent<InputField>().text;
+        if(MainManager.Instance.playerName == "")
         {
-            playerName = "NoName";
+            MainManager.Instance.playerName = "NoName";
         }
-        Debug.Log("PlayerName = " + playerName);
+        Debug.Log("PlayerName = " + MainManager.Instance.playerName);
         SceneManager.LoadScene(1);
     }
 
-    public void Exit()
-    {
-        MainManager.Instance.SavePlayerData();
-#if UNITY_EDITOR
-        EditorApplication.ExitPlaymode();
-#else
-        Application.Quit(); // original code to quit Unity player
-#endif
-    }
 }

@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static int highScore;
-    public static string highScoreName;
+    public static int brickCount;
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
@@ -23,10 +22,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
         void Start()
     {
+        highScoreText.text = "Highscore: " + MainManager.Instance.highScoreName + " : " + MainManager.Instance.highScore;
+        CreateBrickGrid();
+    }
+
+    void CreateBrickGrid()
+    {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
 
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -38,7 +43,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
     private void Update()
     {
         if (!m_Started)
@@ -52,20 +56,30 @@ public class GameManager : MonoBehaviour
 
                 Ball.transform.SetParent(null);
                 Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+                brickCount = 0;
             }
         }
         else if (m_GameOver)
         {
-            if (m_Points > highScore)
+            if (m_Points > MainManager.Instance.highScore)
             {
-                highScore = m_Points;
-                highScoreName = MenuUiHandler.playerName;
+                MainManager.Instance.highScore = m_Points;
+                MainManager.Instance.highScoreName = MainManager.Instance.playerName;
+                MainManager.Instance.SavePlayerData();
+                Debug.Log("Saving from New HighScore");
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            highScoreText.text = "Highscore: " + MainManager.Instance.highScoreName + " : " + MainManager.Instance.highScore;
         }
+        if (brickCount == 36)
+        {
+            CreateBrickGrid();
+            brickCount = 0;
+        }
+        
     }
 
     void AddPoint(int point)
@@ -79,4 +93,5 @@ public class GameManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
 }

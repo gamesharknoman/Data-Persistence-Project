@@ -9,28 +9,23 @@ public class MainManager : MonoBehaviour
     public static MenuUiHandler MenuUiHandler;
     public static GameManager GameManager;
     public string playerName;
-    public int highScore;
     public string highScoreName;
+    public int highScore;
 
     [System.Serializable]
-    public class PlayerData
+    class PlayerData
     {
         public string playerName;
-        public int highScore;
         public string highScoreName;
+        public int highScore;
     }
-    public void Update()
-    {
-        playerName = MenuUiHandler.playerName;
-        highScore = GameManager.highScore;
-        highScoreName = GameManager.highScoreName;
-    }
+
     public void SavePlayerData()
     {
         PlayerData data = new PlayerData();
-        data.playerName = MenuUiHandler.playerName;
-        data.highScore = GameManager.highScore;
-        data.highScoreName = GameManager.highScoreName;
+        data.playerName = playerName;
+        data.highScoreName = highScoreName;
+        data.highScore = highScore;
 
         string json = JsonUtility.ToJson(data);
 
@@ -45,9 +40,9 @@ public class MainManager : MonoBehaviour
             string json = File.ReadAllText(path);
             PlayerData data = JsonUtility.FromJson<PlayerData>(json);
 
-            MenuUiHandler.playerName = data.playerName;
-            GameManager.highScore = data.highScore;
-            GameManager.highScoreName = data.highScoreName;
+            playerName = data.playerName;
+            highScoreName = data.highScoreName;
+            highScore = data.highScore;
         }
     }
     private void Awake()
@@ -59,5 +54,7 @@ public class MainManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadPlayerData();
     }
+
 }
